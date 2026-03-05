@@ -10,9 +10,7 @@ function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") handleRegister();
-  };
+  
 
   const handleRegister = async () => {
     if (!name || !email || !password) {
@@ -38,6 +36,13 @@ function Register() {
       setLoading(false);
     }
   };
+   const handleKeyDown = (e) => {
+  	if (e.key === "Enter") {
+    	    handleRegister();
+ 	 }
+    };
+
+  
 
   return (
     <>
