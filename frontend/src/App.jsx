@@ -13,14 +13,18 @@ function App() {
 
       <Route
         path="/"
-        element={
-          token ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
-        }
+        element={token ? <Navigate to="/dashboard" /> : <Navigate to="/login" />}
       />
 
-      <Route path="/login" element={<Login />} />
+      <Route
+        path="/login"
+        element={token ? <Navigate to="/dashboard" /> : <Login />}
+      />
 
-      <Route path="/register" element={<Register />} />
+      <Route
+        path="/register"
+        element={token ? <Navigate to="/dashboard" /> : <Register />}
+      />
 
       <Route
         path="/dashboard"

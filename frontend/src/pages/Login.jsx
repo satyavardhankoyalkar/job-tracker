@@ -25,8 +25,14 @@ function Login() {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
 
-      localStorage.setItem("token", res.data.access_token);
-      navigate("/dashboard");
+      const token = res.data.access_token;
+
+      if (token) {
+          localStorage.setItem("token", token);
+          navigate("/dashboard");
+      } else {
+          setError("Login failed.");
+      }
     } catch (err) {
       setError("Invalid credentials. Please try again.");
     } finally {
