@@ -10,30 +10,32 @@ function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleRegister = async () => {
-    if (!name || !email || !password) {
-      setError("Please fill in all fields.");
-      return;
-    }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-    setLoading(true);
-    setError("");
-    try {
-      await API.post("/register", { name, email, password });
-      navigate("/login");
-    } catch {
-      setError("Registration failed. Try a different email.");
-    } finally {
-      setLoading(false);
-    }
-  };
+const handleRegister = async () => {
+  if (!name || !email || !password) {
+    setError("Please fill in all fields.");
+    return;
+  }
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") handleRegister();
-  };
+  if (password.length < 6) {
+    setError("Password must be at least 6 characters.");
+    return;
+  }
+
+  setLoading(true);
+  setError("");
+
+  try {
+    await API.post("/register", { name, email, password });
+    navigate("/login");
+
+  } catch (err) {
+    console.log(err.response?.data);
+    setError(err.response?.data?.detail || "Registration failed. Try a different email.");
+
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <>
