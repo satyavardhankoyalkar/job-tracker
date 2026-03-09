@@ -92,6 +92,7 @@ def create_application(
 
     new_app = Application(
         company=app.company,
+        role=app.role,
         status=app.status,
         notes=app.notes,
         user_id=current_user.id
@@ -134,6 +135,7 @@ def update_application(
 
     application.company = app.company
     application.status = app.status
+    application.role = app.role
     application.notes = app.notes
 
     db.commit()

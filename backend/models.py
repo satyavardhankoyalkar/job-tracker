@@ -21,6 +21,7 @@ class Application(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     company = Column(String, nullable=False)
+    role = Column(String)
     status = Column(String, default="Applied")
     notes = Column(String)
 

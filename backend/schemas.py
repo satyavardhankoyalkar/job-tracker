@@ -23,6 +23,7 @@ class Token(BaseModel):
 
 class ApplicationCreate(BaseModel):
     company: str
+    role:str
     status: str
     notes: str
 
@@ -30,6 +31,7 @@ class ApplicationCreate(BaseModel):
 class ApplicationResponse(BaseModel):
     id: int
     company: str
+    role:str
     status: str
     notes: str
 
