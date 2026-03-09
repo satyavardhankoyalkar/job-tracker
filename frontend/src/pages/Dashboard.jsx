@@ -660,7 +660,6 @@ function Dashboard() {
                       cy="50%"
                       outerRadius={90}
                       dataKey="value"
-                      label={({ name, value }) => `${name}: ${value}`}
                     >
                       {chartData.map((entry, index) => (
                         <Cell key={index} fill={COLORS[index % COLORS.length]} />
@@ -689,7 +688,7 @@ function Dashboard() {
                   <XAxis dataKey="name" stroke="#aaa" />
                   <YAxis allowDecimals={false} stroke="#aaa" />
                   <Tooltip />
-                  <Legend />
+                  
                   <Bar dataKey="value" label={{ position: "top", fill: "#aaa" }}>
                     {chartData.map((entry, index) => (
                       <Cell key={index} fill={COLORS[index % COLORS.length]} />
