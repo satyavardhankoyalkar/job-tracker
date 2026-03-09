@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api/api";
+import KanbanBoard from "../components/KanbanBoard";
 import {
   PieChart,
   Pie,
@@ -117,6 +118,18 @@ function Dashboard() {
     setRole("");
     setStatus("Applied");
     setNotes("");
+  };
+  const updateStatus = async (id, newStatus) => {
+    const app = applications.find(a => a.id === Number(id));
+    if (!app) return;
+    await API.put(`/applications/${id}`, {
+      company: app.company,
+      role: app.role,
+      status: newStatus,
+      notes: app.notes
+    }, authHeader);
+
+    fetchApplications();
   };
 
   const handleFormKeyDown = (e) => {
@@ -636,6 +649,10 @@ function Dashboard() {
             <StatCard label="Offers" value={counts.offer} accent="#10b981" />
             <StatCard label="Rejected" value={counts.rejected} accent="#ef4444" />
           </div>
+          <KanbanBoard
+            applications={applications}
+            updateStatus={updateStatus}
+          />
           {/* Analytics Charts */}
           <div style={{
             display: "grid",
@@ -688,7 +705,7 @@ function Dashboard() {
                   <XAxis dataKey="name" stroke="#aaa" />
                   <YAxis allowDecimals={false} stroke="#aaa" />
                   <Tooltip />
-                  
+
                   <Bar dataKey="value" label={{ position: "top", fill: "#aaa" }}>
                     {chartData.map((entry, index) => (
                       <Cell key={index} fill={COLORS[index % COLORS.length]} />
