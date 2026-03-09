@@ -35,7 +35,9 @@ function StatusBadge({ status }) {
       fontSize: "12px", fontWeight: 600, letterSpacing: "0.03em",
     }}>
       <span style={{ width: 6, height: 6, borderRadius: "50%", background: cfg.dot, display: "inline-block" }} />
+
       {status}
+
     </span>
   );
 }
@@ -649,10 +651,13 @@ function Dashboard() {
             <StatCard label="Offers" value={counts.offer} accent="#10b981" />
             <StatCard label="Rejected" value={counts.rejected} accent="#ef4444" />
           </div>
-          <KanbanBoard
+          <div style={{ marginBottom:"30px"}}>
+            <KanbanBoard
             applications={applications}
             updateStatus={updateStatus}
           />
+          </div>
+          
           {/* Analytics Charts */}
           <div style={{
             display: "grid",
