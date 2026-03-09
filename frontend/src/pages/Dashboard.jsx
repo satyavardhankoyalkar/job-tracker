@@ -145,6 +145,7 @@ function Dashboard() {
     { name: "Offer", value: counts.offer },
     { name: "Rejected", value: counts.rejected },
   ];
+  const hasChartData = chartData.some(d => d.value > 0);
 
   const filteredApplications = applications.filter(a => {
     const matchSearch =
@@ -638,7 +639,7 @@ function Dashboard() {
           {/* Analytics Charts */}
           <div style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px,1fr))",
             gap: "20px",
             marginBottom: "28px"
           }}>
@@ -650,25 +651,31 @@ function Dashboard() {
                 Application Status Distribution
               </div>
 
-              <ResponsiveContainer width="100%" height={260}>
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={90}
-                    dataKey="value"
-                    label
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              {hasChartData ? (
+                <ResponsiveContainer width="100%" height={260}>
+                  <PieChart>
+                    <Pie
+                      data={chartData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={90}
+                      dataKey="value"
+                      label={({ name, value }) => `${name}: ${value}`}
+                    >
+                      {chartData.map((entry, index) => (
+                        <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    {hasChartData && <Legend />}
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ textAlign: "center", padding: "60px", color: "#666" }}>
+                  No analytics yet
+                </div>
+              )}
             </div>
-
             {/* Bar Chart */}
             <div className="form-card">
               <div className="form-title">
@@ -680,14 +687,15 @@ function Dashboard() {
                 <BarChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                   <XAxis dataKey="name" stroke="#aaa" />
-                  <YAxis stroke="#aaa" />
+                  <YAxis allowDecimals={false} stroke="#aaa" />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="value">
+                  <Bar dataKey="value" label={{ position: "top", fill: "#aaa" }}>
                     {chartData.map((entry, index) => (
                       <Cell key={index} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Bar>
+
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -758,7 +766,7 @@ function Dashboard() {
                   <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
                   <input
                     className="search-input"
-                    placeholder="Search by company or notes…"
+                    placeholder="Search by company, role or notes…"
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                   />
