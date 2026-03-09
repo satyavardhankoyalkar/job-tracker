@@ -1,13 +1,27 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api/api";
-
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend
+} from "recharts";
 const STATUS_CONFIG = {
-  Applied:   { color: "#6366f1", bg: "rgba(99,102,241,0.15)",  dot: "#6366f1" },
+  Applied: { color: "#6366f1", bg: "rgba(99,102,241,0.15)", dot: "#6366f1" },
   Interview: { color: "#f59e0b", bg: "rgba(245,158,11,0.15)", dot: "#f59e0b" },
-  Offer:     { color: "#10b981", bg: "rgba(16,185,129,0.15)", dot: "#10b981" },
-  Rejected:  { color: "#ef4444", bg: "rgba(239,68,68,0.15)",  dot: "#ef4444" },
+  Offer: { color: "#10b981", bg: "rgba(16,185,129,0.15)", dot: "#10b981" },
+  Rejected: { color: "#ef4444", bg: "rgba(239,68,68,0.15)", dot: "#ef4444" },
 };
+const COLORS = ["#6366f1", "#f59e0b", "#10b981", "#ef4444"];
+
 
 function StatusBadge({ status }) {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG["Applied"];
@@ -125,6 +139,12 @@ function Dashboard() {
     offer: applications.filter(a => a.status === "Offer").length,
     rejected: applications.filter(a => a.status === "Rejected").length,
   };
+  const chartData = [
+    { name: "Applied", value: counts.applied },
+    { name: "Interview", value: counts.interview },
+    { name: "Offer", value: counts.offer },
+    { name: "Rejected", value: counts.rejected },
+  ];
 
   const filteredApplications = applications.filter(a => {
     const matchSearch =
@@ -593,12 +613,12 @@ function Dashboard() {
         <div className="topbar">
           <div className="brand">
             <div className="brand-icon">
-              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" /></svg>
             </div>
             <span className="brand-name">JobTrack</span>
           </div>
           <button className="logout-btn" onClick={logout}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" /></svg>
             Logout
           </button>
         </div>
@@ -615,7 +635,64 @@ function Dashboard() {
             <StatCard label="Offers" value={counts.offer} accent="#10b981" />
             <StatCard label="Rejected" value={counts.rejected} accent="#ef4444" />
           </div>
+          {/* Analytics Charts */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "20px",
+            marginBottom: "28px"
+          }}>
 
+            {/* Pie Chart */}
+            <div className="form-card">
+              <div className="form-title">
+                <span className="form-title-dot" />
+                Application Status Distribution
+              </div>
+
+              <ResponsiveContainer width="100%" height={260}>
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={90}
+                    dataKey="value"
+                    label
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Bar Chart */}
+            <div className="form-card">
+              <div className="form-title">
+                <span className="form-title-dot" />
+                Application Progress
+              </div>
+
+              <ResponsiveContainer width="100%" height={260}>
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                  <XAxis dataKey="name" stroke="#aaa" />
+                  <YAxis stroke="#aaa" />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="value">
+                    {chartData.map((entry, index) => (
+                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+          </div>
           {/* Form */}
           <div className="form-card">
             <div className="form-title">
@@ -678,7 +755,7 @@ function Dashboard() {
             <div style={{ padding: "14px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
               <div className="search-filter-bar">
                 <div className="search-wrap">
-                  <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                  <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
                   <input
                     className="search-input"
                     placeholder="Search by company or notes…"
@@ -703,7 +780,7 @@ function Dashboard() {
             {applications.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">
-                  <svg viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+                  <svg viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" /></svg>
                 </div>
                 <div className="empty-title">No applications yet</div>
                 <div className="empty-sub">Add your first one above to get started</div>
@@ -711,7 +788,7 @@ function Dashboard() {
             ) : filteredApplications.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">
-                  <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                  <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
                 </div>
                 <div className="empty-title">No results found</div>
                 <div className="empty-sub">Try a different search or filter</div>
@@ -731,7 +808,7 @@ function Dashboard() {
                   {filteredApplications.map(app => (
                     <tr key={app.id}>
                       <td className="company-cell">{app.company}</td>
-                      <td>{app.role || <span style={{color:"rgba(255,255,255,0.3)"}}>—</span>}</td>
+                      <td>{app.role || <span style={{ color: "rgba(255,255,255,0.3)" }}>—</span>}</td>
                       <td><StatusBadge status={app.status} /></td>
                       <td className="notes-cell">{app.notes || <span style={{ color: "rgba(255,255,255,0.18)" }}>—</span>}</td>
                       <td>
