@@ -46,6 +46,7 @@ function Dashboard() {
   const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [company, setCompany] = useState("");
+  const [role, setRole] = useState("");
   const [status, setStatus] = useState("Applied");
   const [notes, setNotes] = useState("");
   const [editId, setEditId] = useState(null);
@@ -66,7 +67,7 @@ function Dashboard() {
   const addApplication = async () => {
     if (!company) return;
     setLoading(true);
-    await API.post("/applications", { company, status, notes }, authHeader);
+    await API.post("/applications", { company, role, status, notes }, authHeader);
     resetForm();
     await fetchApplications();
     setLoading(false);
@@ -83,13 +84,14 @@ function Dashboard() {
     window.scrollTo({ top: 0, behavior: "smooth" });
     setEditId(app.id);
     setCompany(app.company);
+    setRole(app.role);
     setStatus(app.status);
     setNotes(app.notes);
   };
 
   const updateApplication = async () => {
     setLoading(true);
-    await API.put(`/applications/${editId}`, { company, status, notes }, authHeader);
+    await API.put(`/applications/${editId}`, { company, role, status, notes }, authHeader);
     resetForm();
     await fetchApplications();
     setLoading(false);
@@ -98,6 +100,7 @@ function Dashboard() {
   const resetForm = () => {
     setEditId(null);
     setCompany("");
+    setRole("");
     setStatus("Applied");
     setNotes("");
   };
@@ -124,7 +127,9 @@ function Dashboard() {
   };
 
   const filteredApplications = applications.filter(a => {
-    const matchSearch = a.company.toLowerCase().includes(search.toLowerCase()) ||
+    const matchSearch =
+      a.company.toLowerCase().includes(search.toLowerCase()) ||
+      (a.role && a.role.toLowerCase().includes(search.toLowerCase())) ||
       (a.notes && a.notes.toLowerCase().includes(search.toLowerCase()));
     const matchFilter = filterStatus === "All" || a.status === filterStatus;
     return matchSearch && matchFilter;
@@ -623,6 +628,16 @@ function Dashboard() {
                 <input className="field-input" placeholder="e.g. Google, Stripe…" value={company} onChange={e => setCompany(e.target.value)} onKeyDown={handleFormKeyDown} />
               </div>
               <div className="field-group">
+                <label>Role</label>
+                <input
+                  className="field-input"
+                  placeholder="Role (e.g. SDE Intern)"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  onKeyDown={handleFormKeyDown}
+                />
+              </div>
+              <div className="field-group">
                 <label>Status</label>
                 <select className="field-input" value={status} onChange={e => setStatus(e.target.value)}>
                   <option>Applied</option>
@@ -706,6 +721,7 @@ function Dashboard() {
                 <thead>
                   <tr>
                     <th>Company</th>
+                    <th>Role</th>
                     <th>Status</th>
                     <th>Notes</th>
                     <th>Actions</th>
@@ -715,6 +731,7 @@ function Dashboard() {
                   {filteredApplications.map(app => (
                     <tr key={app.id}>
                       <td className="company-cell">{app.company}</td>
+                      <td>{app.role || <span style={{color:"rgba(255,255,255,0.3)"}}>—</span>}</td>
                       <td><StatusBadge status={app.status} /></td>
                       <td className="notes-cell">{app.notes || <span style={{ color: "rgba(255,255,255,0.18)" }}>—</span>}</td>
                       <td>
